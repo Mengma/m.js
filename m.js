@@ -26,19 +26,16 @@
  * MMMMMMMM               MMMMMMMM
  * 
  * m.js
- * The M Library
- * @version     0.2.18
- * @author      James Liu
- * @copyright   2014 James Liu
- * @license     MIT License
- *
- * Copyright (C) 2014 James Liu
+ * The M Library v0.2.19
+ * Licensed under MIT (https://github.com/jamesliu96/m.js/blob/master/LICENSE)
+ * 
+ * Copyright (c) 2014 James Liu
  * =J=
  */
 
 "use strict";
 
-if("document" in window) {
+if(typeof window.document !== "object") {
     throw new Error("M requires a window with a document");
 }
 

@@ -26,7 +26,7 @@
  * MMMMMMMM               MMMMMMMM
  * 
  * m.js
- * The M Library v0.2.19
+ * The M Library v0.2.20
  * Licensed under MIT (https://github.com/jamesliu96/m.js/blob/master/LICENSE)
  * 
  * Copyright (c) 2014 James Liu
@@ -340,6 +340,18 @@ M.htmlspecialchars = function (s) {
     s = s.replace(/"/g, "&quot;");
     s = s.replace(/'/g, "&#039;");
     return s;
+};
+M.url = {
+    search: (function () {
+                var _ = {};
+                M.each(window.location.search.slice(1).split("&"), function (s) {
+                    if(s) {
+                        _[s.split("=")[0]] = s.split("=")[1];
+                    }
+                });
+                return _;
+            })(),
+    location: window.location.href.split("#")[1]
 };
 
     return M;

@@ -351,7 +351,7 @@ M.url = {
                 });
                 return _;
             })(),
-    location: window.location.href.split("#")[1]
+    location: window.location.href.split("#")[1] || ""
 };
 
     return M;

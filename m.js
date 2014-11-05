@@ -59,6 +59,7 @@ M.prototype = {
         for(var i in p) {
             if(this.model === p[i].trim()) {
                 _ = true;
+                break;
             }
         }
         return _;
@@ -138,13 +139,28 @@ M.ajax = function (u, d, cs, ce) {
 M.storage = {
     stack: window.localStorage || {},
     set: function (k, v) {
-        return M.storage.stack.setItem(k, v);
+        if (window.localStorage){
+            M.storage.stack.setItem(k, v);      // return value is undefined
+        }
+        else{
+            M.storage.stack[k] = v;
+        }
     },
     get: function (k) {
-        return M.storage.stack.getItem(k);
+        if (window.localStorage){
+            return M.storage.stack.getItem(k);
+        }
+        else{
+            return M.storage.stack[k];
+        }
     },
     del: function (k) {
-        return M.storage.stack.removeItem(k);
+        if (window.localStorage){
+            M.storage.stack.removeItem(k);      // return value is undefined
+        }
+        else{
+            delete M.storage.stack[k];
+        }
     }
 };
 M.each = function (a, c) {

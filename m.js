@@ -364,7 +364,7 @@ M.url = {
                 });
                 return _;
             })(),
-    location: window.location.href.split("#")[1] || ""
+    location: window.location.href.split("#")[1]
 };
 M.status = {
     list: {
@@ -389,7 +389,7 @@ M.status = {
         "118": ["登陆失败", "账号未验证"],
         "119": ["邮箱验证失败", "不需要验证"],
         "120": ["邮箱验证失败", "邮箱不存在"],
-        "121": ["登陆失败", "账号异常"],
+        "121": ["登陆失败", "账号异常"]
     },
     getTitle: function (c) {
         return M.status.list[c][0];

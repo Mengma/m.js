@@ -26,10 +26,10 @@
  * MMMMMMMM               MMMMMMMM
  * 
  * m.js
- * The M Library v0.2.19
+ * The M Library v0.2.23
  * Licensed under MIT (https://github.com/jamesliu96/m.js/blob/master/LICENSE)
  * 
- * Copyright (c) 2014 James Liu
+ * Copyright (C) 2014 James Liu
  * =J=
  */
 
@@ -59,6 +59,7 @@ M.prototype = {
         for(var i in p) {
             if(this.model === p[i].trim()) {
                 _ = true;
+                break;
             }
         }
         return _;
@@ -138,13 +139,25 @@ M.ajax = function (u, d, cs, ce) {
 M.storage = {
     stack: window.localStorage || {},
     set: function (k, v) {
-        return M.storage.stack.setItem(k, v);
+        if(window.localStorage) {
+            M.storage.stack.setItem(k, v);
+        } else {
+            M.storage.stack[k] = v;
+        }
     },
     get: function (k) {
-        return M.storage.stack.getItem(k);
+        if(window.localStorage) {
+            return M.storage.stack.getItem(k);
+        } else {
+            return M.storage.stack[k];
+        }
     },
     del: function (k) {
-        return M.storage.stack.removeItem(k);
+        if(window.localStorage) {
+            M.storage.stack.removeItem(k);
+        } else {
+            M.storage.stack[k] = undefined;
+        }
     }
 };
 M.each = function (a, c) {
@@ -340,6 +353,50 @@ M.htmlspecialchars = function (s) {
     s = s.replace(/"/g, "&quot;");
     s = s.replace(/'/g, "&#039;");
     return s;
+};
+M.url = {
+    search: (function () {
+                var _ = {};
+                M.each(window.location.search.slice(1).split("&"), function (s) {
+                    if(s) {
+                        _[s.split("=")[0]] = s.split("=")[1];
+                    }
+                });
+                return _;
+            })(),
+    location: window.location.href.split("#")[1]
+};
+M.status = {
+    list: {
+        "100": ["邮箱验证成功", ""],
+        "101": ["邮箱验证失败", "已验证"],
+        "102": ["邮箱验证失败", "邮箱地址为空"],
+        "103": ["邮箱验证失败", "邮箱校验码失效"],
+        "104": ["信息获取失败", "当前会话失效"],
+        "105": ["信息获取失败", "用户信息获取错误"],
+        "106": ["注册失败", "邮箱不符合规则"],
+        "107": ["注册失败", "验证码不正确"],
+        "108": ["注册失败", "请求方式错误"],
+        "109": ["注册失败", "邮箱已被注册"],
+        "110": ["注册成功", ""],
+        "111": ["注册失败", "网络出现问题"],
+        "112": ["注册失败", "请求方式错误"],
+        "113": ["登陆失败", "请求方式错误"],
+        "114": ["登录失败", "邮箱未注册"],
+        "115": ["登录失败", "密码错误"],
+        "116": ["登陆成功", ""],
+        "117": ["信息获取失败", "用户不存在"],
+        "118": ["登陆失败", "账号未验证"],
+        "119": ["邮箱验证失败", "不需要验证"],
+        "120": ["邮箱验证失败", "邮箱不存在"],
+        "121": ["登陆失败", "账号异常"]
+    },
+    getTitle: function (c) {
+        return M.status.list[c][0];
+    },
+    getReason: function (c) {
+        return M.status.list[c][1];
+    }
 };
 
     return M;

@@ -26,7 +26,7 @@
  * MMMMMMMM               MMMMMMMM
  * 
  * m.js
- * The M Library v0.2.23
+ * The M Library v0.2.24
  * Licensed under MIT (https://github.com/jamesliu96/m.js/blob/master/LICENSE)
  * 
  * Copyright (C) 2014 James Liu
@@ -397,6 +397,12 @@ M.status = {
     getReason: function (c) {
         return M.status.list[c][1];
     }
+};
+M.alert = function(c) {
+    var id = c.id || c['id'] || setTimeout(0);
+    $("body").append("<div class=\"modal fade\" id=\"" + id + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"modalLabel\" aria-hidden=\"true\"><div class=\"modal-dialog\"><div class=\"modal-content\" style=\"border-radius:1px;\"><div class=\"modal-header\" style=\"color:black;\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">关闭</span></button><h4 class=\"modal-title\" id=\"modalLabel\">" + (c.title || c['title'] || "提示") + "</h4></div><div class=\"modal-body\" style=\"color:black;\">" + (c.content || c['content'] || "") + "</div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">" + (c.closeBtn || c['closeBtn'] || "关闭") + "</button><button type=\"button\" class=\"btn btn-primary\" data-dismiss=\"modal\">" + (c.confirmBtn || c['confirmBtn'] || "确认") + "</button></div></div></div></div>");
+    $("#" + id).modal("show");
+    return id;
 };
 
     return M;

@@ -369,6 +369,32 @@ M.url = {
             })(),
     location: window.location.href.split("#")[1] || ""
 };
+M.alert = function (config) {
+    var id = config.id || config['id'] || setTimeout(0);
+    $("body").append('\
+<div class="modal fade" id="' + id + '" tabindex="-1" role="dialog" aria-labelledby="modalLable" aria-hidden="true">\
+    <div class="modal-dialog">\
+        <div class="modal-content">\
+            <div class="modal-header" style="color:black;">\
+                <button type="button" class="close" data-dismiss="modal">\
+                    <span aria-hidden="true">&times;</span>\
+                    <span class="sr-only">关闭</span>\
+                </button>\
+                <h4 class="modal-title" id="modalLabel">' + (config.title || config['title'] || '提醒') + '</h4>\
+            </div>\
+            <div class="modal-body" style="color:black;">\
+                ' + config.content || config['content'] + '\
+            </div>\
+            <div class="modal-footer">\
+                <button type="button" class="btn btn-default" data-dismiss="modal">' + (config.closeBtn || config['closeBtn'] || '关闭') + '</button>\
+        <button type="button" class="btn btn-primary" data-dismiss="modal">' + (config.confirmBtn || config['confirmBtn'] || '确认') + '</button>\
+            </div>\
+        </div>\
+    </div>\
+</div>');
+    $("#" + id).modal("show");
+    return id;
+};
 
     return M;
 });

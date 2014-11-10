@@ -35,7 +35,7 @@
 
 "use strict";
 
-if(typeof window.jQuery !== "object") {
+if(typeof window.jQuery !== "function") {
     throw new Error("M requires jQuery");
 }
 
@@ -363,10 +363,12 @@ M.status = {
     }
 };
 M.alert = function (c) {
+    c = typeof c === "string" ? {content: c} : c ;
     var id = c.id || c['id'] || setTimeout(0);
-    jQuery("body").append("<div class=\"modal fade\" id=\"" + id + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"modalLabel\" aria-hidden=\"true\"><div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-header\" style=\"color:black;\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">关闭</span></button><h4 class=\"modal-title\" id=\"modalLabel\">" + (c.title || c['title'] || "提示") + "</h4></div><div class=\"modal-body\" style=\"color:black;\">" + (c.content || c['content'] || "") + "</div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">" + (c.closeBtn || c['closeBtn'] || "关闭") + "</button><button type=\"button\" class=\"btn btn-primary\" data-dismiss=\"modal\">" + (c.confirmBtn || c['confirmBtn'] || "确认") + "</button></div></div></div></div>");
+    jQuery("body").append("<div class=\"modal fade\" id=\"" + id + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"modalLabel\" aria-hidden=\"true\"><div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-header\" style=\"color:black;\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">关闭</span></button><h4 class=\"modal-title\" id=\"modalLabel\">" + (c.title || c['title'] || "提示") + "</h4></div><div class=\"modal-body\" style=\"color:black;\">" + (c.content || c['content'] || "") + "</div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-primary\" data-dismiss=\"modal\">" + (c.confirmBtn || c['confirmBtn'] || "确认") + "</button></div></div></div></div>");
     jQuery("#" + id).modal("show");
     jQuery("#" + id).on("hidden.bs.modal", function () {
+        c.cb && c.cb();
         jQuery(this).remove();
     });
     return id;

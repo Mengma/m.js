@@ -26,7 +26,7 @@
  * MMMMMMMM               MMMMMMMM
  * 
  * m.js
- * The M Library v0.2.24
+ * The M Library v0.2.25
  * Licensed under MIT (https://github.com/jamesliu96/m.js/blob/master/LICENSE)
  * 
  * Copyright (C) 2014 James Liu
@@ -35,8 +35,8 @@
 
 "use strict";
 
-if(typeof window.document !== "object") {
-    throw new Error("M requires a window with a document");
+if(typeof window.jQuery !== "function") {
+    throw new Error("M requires jQuery");
 }
 
 /**
@@ -90,51 +90,15 @@ M.safari = !M.chrome && /Safari/.test(M.ua);
 M.firefox = /Firefox/.test(M.ua);
 M.opera = /Opera/.test(M.ua);
 M.ajax = function (u, d, cs, ce) {
-    if(typeof jQuery === "function") {
-        if(jQuery.ajax) {
-            return jQuery.ajax({
-                url: u,
-                type: "POST",
-                data: d,
-                dataType: "json",
-                timeout: 10000,
-                success: cs,
-                error: ce
-            });
-        }
-    } else {
-        if(typeof window.XMLHttpRequest === "function") {
-            var xhr = new window.XMLHttpRequest();
-        } else if(typeof ActiveXObject === "function") {
-            var xhr = new ActiveXObject("Microsoft.XMLHTTP");
-        } else {
-            throw new Error("XHR is not available");
-        }
-        xhr.onreadystatechange = function () {
-            if(xhr.readyState == 4 && xhr.status == 200) {
-                try {
-                    var __ = eval("(" + xhr.responseText + ")");
-                } catch(e) {}
-                if(typeof cs === "function") {
-                    cs(__);
-                }
-            } else {
-                if(typeof ce === "function") {
-                    ce();
-                }
-            }
-        };
-        u = u || "";
-        d = d || {};
-        var _ = "";
-        for(var i in d) {
-            _ += i + "=" + d[i] + "&";
-        }
-        xhr.open("POST", u, true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
-        xhr.send(_);
-        return xhr;
-    }
+    return window.jQuery.ajax({
+        url: u,
+        type: "POST",
+        data: d,
+        dataType: "json",
+        timeout: 10000,
+        success: cs,
+        error: ce
+    });
 };
 M.storage = {
     stack: window.localStorage || {},
@@ -398,10 +362,15 @@ M.status = {
         return M.status.list[c][1];
     }
 };
-M.alert = function(c) {
+M.alert = function (c) {
+    c = typeof c === "string" ? {content: c} : c ;
     var id = c.id || c['id'] || setTimeout(0);
-    $("body").append("<div class=\"modal fade\" id=\"" + id + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"modalLabel\" aria-hidden=\"true\"><div class=\"modal-dialog\"><div class=\"modal-content\" style=\"border-radius:1px;\"><div class=\"modal-header\" style=\"color:black;\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">关闭</span></button><h4 class=\"modal-title\" id=\"modalLabel\">" + (c.title || c['title'] || "提示") + "</h4></div><div class=\"modal-body\" style=\"color:black;\">" + (c.content || c['content'] || "") + "</div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">" + (c.closeBtn || c['closeBtn'] || "关闭") + "</button><button type=\"button\" class=\"btn btn-primary\" data-dismiss=\"modal\">" + (c.confirmBtn || c['confirmBtn'] || "确认") + "</button></div></div></div></div>");
-    $("#" + id).modal("show");
+    jQuery("body").append("<div class=\"modal fade\" id=\"" + id + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"modalLabel\" aria-hidden=\"true\"><div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-header\" style=\"color:black;\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">关闭</span></button><h4 class=\"modal-title\" id=\"modalLabel\">" + (c.title || c['title'] || "提示") + "</h4></div><div class=\"modal-body\" style=\"color:black;\">" + (c.content || c['content'] || "") + "</div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-primary\" data-dismiss=\"modal\">" + (c.confirmBtn || c['confirmBtn'] || "确认") + "</button></div></div></div></div>");
+    jQuery("#" + id).modal("show");
+    jQuery("#" + id).on("hidden.bs.modal", function () {
+        c.cb && c.cb();
+        jQuery(this).remove();
+    });
     return id;
 };
 

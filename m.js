@@ -376,7 +376,7 @@ M.alert = function (c) {
 M.form = function(c) {
     c = c ? c : {};
     id = c.id || "form";
-    $(id).attr("novalidate", "");
+    jQuery(id).attr("novalidate", "");
     var whiteList = [
         "这个邮箱还没有注册哦",
         "密码错误",
@@ -398,11 +398,11 @@ M.form = function(c) {
             };
         },
         equalTo: function(o, to) {
-            $(to).on("blur", function() {
+            jQuery(to).on("blur", function() {
                 o.trigger("input")
             });
             return function() {
-                o.val() !== $(to).val() ? showAlert(o, "两次输入的密码不相同") : destroyAlert(o, "两次输入的密码不相同");
+                o.val() !== jQuery(to).val() ? showAlert(o, "两次输入的密码不相同") : destroyAlert(o, "两次输入的密码不相同");
             };
         },
         email: function(o) {
@@ -422,14 +422,14 @@ M.form = function(c) {
         }
     };
     var showAlert = function(o, content) {
-        if ($(".popover-content:visible").length !== 0) return;
+        if (jQuery(".popover-content:visible").length !== 0) return;
         if (o.data("content") !== content) {
             o.popover("destroy");
             o.focus().data("content", content).popover("show");
         }
     };
     var destroyAlert = function(o, content) {
-        if (o.data("content") === content || !content || $.inArray(o.data("content"), whiteList) !== -1) {
+        if (o.data("content") === content || !content || jQuery.inArray(o.data("content"), whiteList) !== -1) {
             o.popover("destroy");
             o.data("content", "");
         }
@@ -440,38 +440,38 @@ M.form = function(c) {
         };
     };
     var cbMap = {};
-    $(id).find("input, textarea").each(function() {
-        $(this).data({
+    jQuery(id).find("input, textarea").each(function() {
+        jQuery(this).data({
             "trigger": "manual",
             "placement": c.placement || "left",
             "content": ""
         });
-        var listenToCode = $(this).attr("listen-to-code") ? $(this).attr("listen-to-code").split(",") : [];
+        var listenToCode = jQuery(this).attr("listen-to-code") ? jQuery(this).attr("listen-to-code").split(",") : [];
         for (var i = 0; i < listenToCode.length; i++) {
-            cbMap[listenToCode[i]] = $(this);
+            cbMap[listenToCode[i]] = jQuery(this);
         };
-        $(this).attr("required") && $(this).on("input", helper(bind.require($(this))));
-        $(this).attr("max-length") && $(this).on("input", helper(bind.maxLength($(this), $(this).attr("max-length"))));
-        $(this).attr("min-length") && $(this).on("input", helper(bind.minLength($(this), $(this).attr("min-length"))));
-        $(this).attr("equal-to") && $(this).on("input", helper(bind.equalTo($(this), $(this).attr("equal-to"))));
-        $(this).attr("type") === "email" && $(this).on("blur", helper(bind.email($(this)))).on("input", helper(bind.clear($(this))));
+        jQuery(this).attr("required") && jQuery(this).on("input", helper(bind.require(jQuery(this))));
+        jQuery(this).attr("max-length") && jQuery(this).on("input", helper(bind.maxLength(jQuery(this), jQuery(this).attr("max-length"))));
+        jQuery(this).attr("min-length") && jQuery(this).on("input", helper(bind.minLength(jQuery(this), jQuery(this).attr("min-length"))));
+        jQuery(this).attr("equal-to") && jQuery(this).on("input", helper(bind.equalTo(jQuery(this), jQuery(this).attr("equal-to"))));
+        jQuery(this).attr("type") === "email" && jQuery(this).on("blur", helper(bind.email(jQuery(this)))).on("input", helper(bind.clear(jQuery(this))));
     });
-    $(id).submit(function(e) {
+    jQuery(id).submit(function(e) {
         e.preventDefault();
-        if ($(".popover-content:visible").length !== 0) return;
+        if (jQuery(".popover-content:visible").length !== 0) return;
         var no_empty = true;
         var sendData = {}
-        $(this).find("input, textarea").each(function() {
-            if ($(this).attr("required") && no_empty && !$(this).val()) {
+        jQuery(this).find("input, textarea").each(function() {
+            if (jQuery(this).attr("required") && no_empty && !jQuery(this).val()) {
                 no_empty = false;
-                showAlert($(this), "这里不能为空哦");
+                showAlert(jQuery(this), "这里不能为空哦");
             }
-            if ($(this).attr) {
-                sendData[$(this).attr("name")] = $(this).attr("type") === "password" ? M.crypto.md5($(this).val()) : $(this).val();
+            if (jQuery(this).attr) {
+                sendData[jQuery(this).attr("name")] = jQuery(this).attr("type") === "password" ? M.crypto.md5(jQuery(this).val()) : jQuery(this).val();
             }
         });
         if (!no_empty) return;
-        M.ajax($(this).attr("action"), sendData, function(data) {
+        M.ajax(jQuery(this).attr("action"), sendData, function(data) {
             data = c.cb ? c.cb(data) ? data : {"code": "0"} : data;
             if (data["code"] === "118") {
                 M.alert("请登陆邮箱进行验证");
@@ -492,7 +492,7 @@ M.form = function(c) {
             } else if (data["code"] === "109") {
                 showAlert(cbMap[data["code"]], "Email地址已被使用");
             } else if (data["code"] === "110") {
-                $("#login-success-modal").modal("show");
+                jQuery("#login-success-modal").modal("show");
             }
         }, function() {
             M.alert("网络有问题！无法登录！可能木有吃药，感觉自己萌萌哒！");

@@ -375,7 +375,7 @@ M.alert = function (c) {
 };
 M.form = function(c) {
     c = c ? c : {};
-    id = c.id || "form";
+    var id = c.id || "form";
     jQuery(id).attr("novalidate", "");
     var whiteList = [
         "这个邮箱还没有注册哦",
@@ -422,7 +422,9 @@ M.form = function(c) {
         }
     };
     var showAlert = function(o, content) {
-        if (jQuery(".popover-content:visible").length !== 0) return;
+        if (jQuery(".popover-content:visible").length !== 0 && !jQuery(".popover-content:visible").closest(".popover").prev().is(o)) {
+            return;
+        }
         if (o.data("content") !== content) {
             o.popover("destroy");
             o.focus().data("content", content).popover("show");
@@ -458,7 +460,11 @@ M.form = function(c) {
     });
     jQuery(id).submit(function(e) {
         e.preventDefault();
-        if (jQuery(".popover-content:visible").length !== 0) return;
+        jQuery(this).find("input, textarea").trigger("input");
+        if (jQuery(".popover-content:visible").length !== 0) {
+            jQuery(".popover-content:visible").closest(".popover").prev().focus();
+            return;
+        };
         var no_empty = true;
         var sendData = {}
         jQuery(this).find("input, textarea").each(function() {
@@ -497,7 +503,6 @@ M.form = function(c) {
         }, function() {
             M.alert("网络有问题！无法登录！可能木有吃药，感觉自己萌萌哒！");
         });
-    })
-};
+    });
     return M;
 });

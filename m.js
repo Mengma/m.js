@@ -373,6 +373,131 @@ M.alert = function (c) {
     });
     return id;
 };
-
+M.form = function(c) {
+    c = c ? c : {};
+    id = c.id || "form";
+    jQuery(id).attr("novalidate", "");
+    var whiteList = [
+        "这个邮箱还没有注册哦",
+        "密码错误",
+        "验证码输入错误",
+        "Email输入错误",
+        "Email地址已被使用"
+    ];
+    var bind = {
+        maxLength: function(o, l) {
+            l = parseInt(l);
+            return function() {
+                o.val().length > l && o.val(o.val().substring(0, l));
+            };
+        },
+        minLength: function(o, l) {
+            l = parseInt(l);
+            return function() {
+                o.val().length < l ? showAlert(o, "长度不能小于" + l + "位") : destroyAlert(o, "长度不能小于" + l + "位");
+            };
+        },
+        equalTo: function(o, to) {
+            jQuery(to).on("blur", function() {
+                o.trigger("input")
+            });
+            return function() {
+                o.val() !== jQuery(to).val() ? showAlert(o, "两次输入的密码不相同") : destroyAlert(o, "两次输入的密码不相同");
+            };
+        },
+        email: function(o) {
+            return function() {
+                !/^[\w\-\.]+@[\w\-\.]+(\.\w+)+$/.test(o.val()) ? showAlert(o, "邮件格式错误") : destroyAlert(o, "邮件格式错误");
+            };
+        },
+        require: function(o) {
+            return function() {
+                o.val() == "" ? showAlert(o, "这里不能为空哦") : destroyAlert(o, "这里不能为空哦");
+            };
+        },
+        clear: function(o) {
+            return function() {
+                destroyAlert(o);
+            };
+        }
+    };
+    var showAlert = function(o, content) {
+        if (jQuery(".popover-content:visible").length !== 0) return;
+        if (o.data("content") !== content) {
+            o.popover("destroy");
+            o.focus().data("content", content).popover("show");
+        }
+    };
+    var destroyAlert = function(o, content) {
+        if (o.data("content") === content || !content || jQuery.inArray(o.data("content"), whiteList) !== -1) {
+            o.popover("destroy");
+            o.data("content", "");
+        }
+    };
+    var helper = function(next) {
+        return function() {
+            next && next();
+        };
+    };
+    var cbMap = {};
+    jQuery(id).find("input, textarea").each(function() {
+        jQuery(this).data({
+            "trigger": "manual",
+            "placement": c.placement || "left",
+            "content": ""
+        });
+        var listenToCode = jQuery(this).attr("listen-to-code") ? jQuery(this).attr("listen-to-code").split(",") : [];
+        for (var i = 0; i < listenToCode.length; i++) {
+            cbMap[listenToCode[i]] = jQuery(this);
+        };
+        jQuery(this).attr("required") && jQuery(this).on("input", helper(bind.require(jQuery(this))));
+        jQuery(this).attr("max-length") && jQuery(this).on("input", helper(bind.maxLength(jQuery(this), jQuery(this).attr("max-length"))));
+        jQuery(this).attr("min-length") && jQuery(this).on("input", helper(bind.minLength(jQuery(this), jQuery(this).attr("min-length"))));
+        jQuery(this).attr("equal-to") && jQuery(this).on("input", helper(bind.equalTo(jQuery(this), jQuery(this).attr("equal-to"))));
+        jQuery(this).attr("type") === "email" && jQuery(this).on("blur", helper(bind.email(jQuery(this)))).on("input", helper(bind.clear(jQuery(this))));
+    });
+    jQuery(id).submit(function(e) {
+        e.preventDefault();
+        if (jQuery(".popover-content:visible").length !== 0) return;
+        var no_empty = true;
+        var sendData = {}
+        jQuery(this).find("input, textarea").each(function() {
+            if (jQuery(this).attr("required") && no_empty && !jQuery(this).val()) {
+                no_empty = false;
+                showAlert(jQuery(this), "这里不能为空哦");
+            }
+            if (jQuery(this).attr) {
+                sendData[jQuery(this).attr("name")] = jQuery(this).attr("type") === "password" ? M.crypto.md5(jQuery(this).val()) : jQuery(this).val();
+            }
+        });
+        if (!no_empty) return;
+        M.ajax(jQuery(this).attr("action"), sendData, function(data) {
+            data = c.cb ? c.cb(data) ? data : {"code": "0"} : data;
+            if (data["code"] === "118") {
+                M.alert("请登陆邮箱进行验证");
+            } else if (data["code"] === "121") {
+                M.alert("用户信息异常，请1小时后再试");
+            } else if (data["code"] === "207") {
+                window.location.href = "/guide/";
+            } else if (data["code"] === "116") {
+                window.location.href = c_url;
+            } else if (data["code"] === "114") {
+                showAlert(cbMap[data["code"]], "这个邮箱还没有注册哦");
+            } else if (data["code"] === "115") {
+                showAlert(cbMap[data["code"]], "密码错误");
+            } else if (data["code"] === "107") {
+                showAlert(cbMap[data["code"]], "验证码输入错误");
+            } else if (data["code"] === "106") {
+                showAlert(cbMap[data["code"]], "Email输入错误");
+            } else if (data["code"] === "109") {
+                showAlert(cbMap[data["code"]], "Email地址已被使用");
+            } else if (data["code"] === "110") {
+                jQuery("#login-success-modal").modal("show");
+            }
+        }, function() {
+            M.alert("网络有问题！无法登录！可能木有吃药，感觉自己萌萌哒！");
+        });
+    })
+};
     return M;
 });

@@ -436,7 +436,7 @@ M.alert = function(c) {
 };
 M.form = function(c) {
     c = c ? c : {};
-    id = c.id || "form";
+    var id = c.id || "form";
     jQuery(id).attr("novalidate", "");
     var whiteList = [
         "这个邮箱还没有注册哦",
@@ -483,7 +483,9 @@ M.form = function(c) {
         }
     };
     var showAlert = function(o, content) {
-        if (jQuery(".popover-content:visible").length !== 0) return;
+        if (jQuery(".popover-content:visible").length !== 0 && !jQuery(".popover-content:visible").closest(".popover").prev().is(o)) {
+            return;
+        }
         if (o.data("content") !== content) {
             o.popover("destroy");
             o.focus().data("content", content).popover("show");
@@ -515,11 +517,15 @@ M.form = function(c) {
         jQuery(this).attr("max-length") && jQuery(this).on("input", helper(bind.maxLength(jQuery(this), jQuery(this).attr("max-length"))));
         jQuery(this).attr("min-length") && jQuery(this).on("input", helper(bind.minLength(jQuery(this), jQuery(this).attr("min-length"))));
         jQuery(this).attr("equal-to") && jQuery(this).on("input", helper(bind.equalTo(jQuery(this), jQuery(this).attr("equal-to"))));
-        jQuery(this).attr("type") === "email" && jQuery(this).on("blur", helper(bind.email(jQuery(this)))).on("input", helper(bind.clear(jQuery(this))));
+        jQuery(this).attr("type") === "email" && jQuery(this).on("blur", helper(bind.email(jQuery(this)))).on("keyup", helper(bind.clear(jQuery(this))));
     });
     jQuery(id).submit(function(e) {
         e.preventDefault();
-        if (jQuery(".popover-content:visible").length !== 0) return;
+        jQuery(this).find("input, textarea").trigger("input");
+        if (jQuery(".popover-content:visible").length !== 0) {
+            jQuery(".popover-content:visible").closest(".popover").prev().focus();
+            return;
+        };
         var no_empty = true;
         var sendData = {};
         jQuery(this).find("input, textarea").each(function() {

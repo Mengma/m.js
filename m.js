@@ -456,7 +456,7 @@ M.form = function(c) {
         jQuery(this).attr("max-length") && jQuery(this).on("input", helper(bind.maxLength(jQuery(this), jQuery(this).attr("max-length"))));
         jQuery(this).attr("min-length") && jQuery(this).on("input", helper(bind.minLength(jQuery(this), jQuery(this).attr("min-length"))));
         jQuery(this).attr("equal-to") && jQuery(this).on("input", helper(bind.equalTo(jQuery(this), jQuery(this).attr("equal-to"))));
-        jQuery(this).attr("type") === "email" && jQuery(this).on("blur", helper(bind.email(jQuery(this)))).on("input", helper(bind.clear(jQuery(this))));
+        jQuery(this).attr("type") === "email" && jQuery(this).on("blur", helper(bind.email(jQuery(this)))).on("keyup", helper(bind.clear(jQuery(this))));
     });
     jQuery(id).submit(function(e) {
         e.preventDefault();

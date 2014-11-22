@@ -370,7 +370,17 @@ M.url = {
         });
         return _;
     })(),
-    location: window.location.href.split("#")[1]
+    location: function(s) {
+        if (typeof window.location.hash === "string")
+            if (typeof s === "string") {
+                window.location.hash = s;
+            } else {
+                return window.location.hash.slice(1)
+            }
+        } else {
+            return window.location.href.split("#")[1];
+        }
+    }
 };
 M.cookie = {
     set: function(c, e, d, f, a, b) {
@@ -503,7 +513,7 @@ M.form = function(c) {
         };
     };
     var cbMap = {};
-    jQuery(id).find("input, textarea").each(function() {
+    jQuery(id).find("input,textarea").each(function() {
         jQuery(this).data({
             "trigger": "manual",
             "placement": c.placement || "left",
@@ -521,14 +531,14 @@ M.form = function(c) {
     });
     jQuery(id).submit(function(e) {
         e.preventDefault();
-        jQuery(this).find("input, textarea").trigger("input");
+        jQuery(this).find("input,textarea").trigger("input");
         if (jQuery(".popover-content:visible").length !== 0) {
             jQuery(".popover-content:visible").closest(".popover").prev().focus();
             return;
         }
         var no_empty = true;
         var sendData = {};
-        jQuery(this).find("input, textarea").each(function() {
+        jQuery(this).find("input,textarea").each(function() {
             if (jQuery(this).attr("required") && no_empty && !jQuery(this).val()) {
                 no_empty = false;
                 showAlert(jQuery(this), "这里不能为空哦");

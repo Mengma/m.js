@@ -371,7 +371,7 @@ M.url = {
         return _;
     })(),
     location: function(s) {
-        if (typeof window.location.hash === "string")
+        if (typeof window.location.hash === "string") {
             if (typeof s === "string") {
                 window.location.hash = s;
             } else {

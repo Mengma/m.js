@@ -1,4 +1,4 @@
-! function(g, m) {
+;(function(g, m) {
     if (typeof define === "function" && define.amd) {
         define("M", [], m);
     } else if (typeof exports === "object") {
@@ -6,7 +6,7 @@
     } else {
         g.M = m();
     }
-}(this, function() {
+})(this, function() {
 /*!
  * MMMMMMMM               MMMMMMMM
  * M:::::::M             M:::::::M

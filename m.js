@@ -26,7 +26,7 @@
  * MMMMMMMM               MMMMMMMM
  *
  * m.js
- * The M Library v0.3.0
+ * The M Library v0.4.0
  * Licensed under MIT (https://github.com/jamesliu96/m.js/blob/master/LICENSE)
  * Including Phenix.js (https://github.com/jamesliu96/phenix.js) released under the MIT License.
  *

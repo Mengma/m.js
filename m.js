@@ -428,7 +428,7 @@ M.status = {
 	}
 };
 M.alert = function(c) {
-	return Phenix.init(c);
+	return Phenix.init(c).show();
 };
 M.form = function(c) {
 	c = c ? c : {};

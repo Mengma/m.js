@@ -21,11 +21,11 @@
  * MMMMMMMM               MMMMMMMM
  *
  * m.js
- * The M Library v0.4.2
+ * The M Library v0.4.3
  * Licensed under MIT (https://github.com/jamesliu96/m.js/blob/master/LICENSE)
  * Including Phenix.js (https://github.com/jamesliu96/phenix.js) released under the MIT License.
  *
- * Copyright (C) 2014-2015 James Liu
+ * Copyright (C) 2014-2015 Mengma
  * =J=
  */
 
@@ -606,6 +606,9 @@ M.form = function(c) {
 
 	Phenix.element = Phenix.dom.createElement('div');
 	Phenix.element.setAttribute('id', 'phenix');
+	Phenix.mask = Phenix.dom.createElement('div');
+	Phenix.mask.setAttribute('id', 'phenix-mask');
+	Phenix.mask.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;padding:0;margin:0;z-index:99998;background-color:rgba(0,0,0,0.4);';
 
 	Phenix.defaults = {};
 	Phenix.defaults.config = {
@@ -616,7 +619,7 @@ M.form = function(c) {
 			color: "#36b14a",
 			face: ":)",
 			title: "Welcome to Phenix",
-			description: "Copyright (C) 2015 James Liu"
+			description: "Made with ❤ by James Liu"
 		}
 	};
 	Phenix.defaults.style = {
@@ -649,13 +652,17 @@ M.form = function(c) {
 	};
 
 	var _opacity = function(opacity) {
-		var element = Phenix.element;
+		var element = Phenix.element,
+			mask = Phenix.mask;
 		element.filter ? element.style.filter = 'alpha(opacity=' + opacity + ')' : element.style.opacity = opacity / 100;
+		mask.filter ? mask.style.filter = 'alpha(opacity=' + opacity + ')' : mask.style.opacity = opacity / 100;
 	}
 
 	Phenix.show = function(callback) {
-		var element = Phenix.element;
+		var element = Phenix.element,
+			mask = Phenix.mask;
 		_DOMcreate(element);
+		_DOMcreate(mask);
 		var opacity = 0;
 		(function(){
 			_opacity(opacity);
@@ -669,8 +676,19 @@ M.form = function(c) {
 	};
 
 	Phenix.hide = function(callback) {
-		var element = Phenix.element;
-		_DOMdestroy(element);
+		var element = Phenix.element,
+			mask = Phenix.mask;
+		var opacity = 100;
+		(function(){
+			_opacity(opacity);
+			opacity -= 15;
+			if (opacity >= 0) {
+				setTimeout(arguments.callee, 20);
+			} else {
+				_DOMdestroy(element);
+				_DOMdestroy(mask);
+			}
+		})();
 		(typeof callback === "function") && callback();
 		return Phenix;
 	};
